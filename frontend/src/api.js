@@ -47,6 +47,7 @@ export const api = {
     );
     return request(`/api/logs${params.toString() ? `?${params}` : ""}`);
   },
+  clearLogs: () => request("/api/logs", { method: "DELETE" }),
   verifyChain: () => request("/api/logs/verify"),
   sendMessage: (message, conversationId) =>
     request("/api/agent/message", {

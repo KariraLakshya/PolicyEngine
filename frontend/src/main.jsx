@@ -405,6 +405,19 @@ function LogsView({ initialLogs }) {
           <Link2 size={16} />
           Verify Chain
         </button>
+        <button
+          className="danger-button"
+          onClick={async () => {
+            if (!window.confirm("Clear all audit logs?")) return;
+            await api.clearLogs();
+            setLogs([]);
+            setChainStatus(null);
+          }}
+          title="Clear all logs"
+        >
+          <Trash2 size={16} />
+          Clear
+        </button>
       </div>
 
       {chainStatus && (

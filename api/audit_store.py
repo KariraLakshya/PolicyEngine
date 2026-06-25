@@ -39,6 +39,13 @@ class AuditStore:
 
         return entries
 
+    def clear(self) -> int:
+        with self._lock:
+            count = len(self._entries)
+            self._entries = []
+            self._last_chain_hash = GENESIS_HASH
+        return count
+
     def verify_chain(self) -> dict[str, Any]:
         with self._lock:
             entries = list(self._entries)

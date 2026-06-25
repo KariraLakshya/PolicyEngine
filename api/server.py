@@ -117,6 +117,12 @@ def decide_approval(approval_id: str, payload: ApprovalDecisionRequest) -> dict:
     return {"approval": request.to_dict()}
 
 
+@app.delete("/api/logs")
+def clear_logs() -> dict:
+    count = audit_store.clear()
+    return {"cleared": count}
+
+
 @app.get("/api/logs/verify")
 def verify_audit_chain() -> dict:
     return audit_store.verify_chain()
