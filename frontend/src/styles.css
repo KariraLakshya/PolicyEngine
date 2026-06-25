@@ -476,6 +476,87 @@ pre {
   color: #9f2a21;
 }
 
+.msg-chain {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.msg {
+  border-radius: 8px;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+}
+
+.msg.user {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.msg.assistant {
+  background: #f8fafc;
+}
+
+.msg.tool {
+  background: #f8fafc;
+}
+
+.msg.tool.allowed {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.msg.tool.blocked {
+  background: #fff5f5;
+  border-color: #fca5a5;
+}
+
+.msg.tool.approval {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+.msg-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.msg-role {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #667589;
+}
+
+.msg-tool {
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  background: #e2e8f0;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.msg-content {
+  margin: 0;
+  font-size: 13px;
+  color: #1e293b;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.agent-response {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #0c4a6e;
+}
+
 @media (max-width: 920px) {
   .app-shell {
     grid-template-columns: 1fr;

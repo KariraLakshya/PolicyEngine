@@ -492,20 +492,57 @@ function SettingsView({ settings, tools, onChanged }) {
   );
 }
 
+const OUTCOME_ORDER = ["ALLOW", "BLOCK", "REQUIRE_APPROVAL", "INJECTION_DETECTED", "HONEYPOT_TRIGGERED"];
+
+function msgClass(msg) {
+  if (msg.role === "user") return "msg user";
+  if (msg.role === "tool") {
+    const outcome = msg.metadata?.outcome || "";
+    if (outcome === "BLOCK" || outcome === "INJECTION_DETECTED" || outcome === "HONEYPOT_TRIGGERED") return "msg tool blocked";
+    if (outcome === "REQUIRE_APPROVAL") return "msg tool approval";
+    if (outcome === "ALLOW") return "msg tool allowed";
+    return "msg tool";
+  }
+  return "msg assistant";
+}
+
+function MsgBubble({ msg }) {
+  const outcome = msg.metadata?.outcome;
+  const toolName = msg.metadata?.tool_name;
+  return (
+    <div className={msgClass(msg)}>
+      <div className="msg-meta">
+        <span className="msg-role">{msg.role}</span>
+        {toolName && <span className="msg-tool">{toolName}</span>}
+        {outcome && <span className={`outcome ${outcome.toLowerCase()}`}>{outcome}</span>}
+      </div>
+      <p className="msg-content">{msg.content}</p>
+    </div>
+  );
+}
+
 function AgentView({ onChanged }) {
   const [message, setMessage] = useState(
     'Create a file named demo.txt with the text "hello from ArmorIQ".'
   );
   const [conversationId, setConversationId] = useState("");
   const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   async function send(event) {
     event.preventDefault();
-    const payload = await api.sendMessage(message, conversationId);
-    setConversationId(payload.conversation.id);
-    setResult(payload);
-    onChanged();
+    setLoading(true);
+    try {
+      const payload = await api.sendMessage(message, conversationId);
+      setConversationId(payload.conversation.id);
+      setResult(payload);
+      onChanged();
+    } finally {
+      setLoading(false);
+    }
   }
+
+  const messages = result?.conversation?.messages || [];
 
   return (
     <section className="split">
@@ -522,17 +559,33 @@ function AgentView({ onChanged }) {
             rows={6}
           />
         </label>
-        <button className="primary" type="submit">
+        <button className="primary" type="submit" disabled={loading}>
           <Send size={16} />
-          Send
+          {loading ? "Thinking…" : "Send"}
         </button>
+        {conversationId && (
+          <p style={{ fontSize: 12, color: "#667589", wordBreak: "break-all" }}>
+            conv: {conversationId}
+          </p>
+        )}
       </form>
+
       <div className="panel wide">
         <div className="panel-heading">
-          <h2>Result</h2>
-          <span>{conversationId || "new conversation"}</span>
+          <h2>Conversation</h2>
+          <span>{messages.length} messages</span>
         </div>
-        <pre>{result ? JSON.stringify(result, null, 2) : "No result yet."}</pre>
+        {messages.length === 0 && <div className="empty">Send a message to start.</div>}
+        <div className="msg-chain">
+          {messages.map((msg, i) => (
+            <MsgBubble key={i} msg={msg} />
+          ))}
+        </div>
+        {result?.response && (
+          <div className="agent-response">
+            <strong>Agent:</strong> {result.response}
+          </div>
+        )}
       </div>
     </section>
   );
